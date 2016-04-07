@@ -381,29 +381,57 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
         }
     }
 
-    public int findRoot(int pos) {
+    public int findRoot() {
         try {
             int dyd = (int) (raf.length() / 41);
 //            raf.seek(14*2*1+4*1+1*1);
 
             int lpoint = -1;
             int rpoint = -1;
-            for (int i = 0; i < dyd; i++) {
-                raf.seek(14 * 2 * i + 4 * i + 
+            for (int j = 0; j < dyd; j++) {
+                int counter = 0;
+                
+                for (int i = 0; i < dyd; i++) {
+                    if(j!=i){
+                        try{
+                            raf.seek(14 * 2 * i + 4 * i + 
                         1 * i + 4 * i + 4 * i + 14 * 2 + 4 * 1 + 1);
-                lpoint = raf.readInt();
-                rpoint = raf.readInt();
-                if (lpoint == pos) {
-                    System.out.println(pos + " pos " + i);
-                    return findRoot(lpoint);
-
-                } else if (rpoint == pos) {
-                    System.out.println(pos + " pos " + i);
-                    return findRoot(rpoint);
-                } else if (i == dyd - 1) {
-                    return pos;
+                             lpoint = raf.readInt();
+                            rpoint = raf.readInt();
+                            if(lpoint == j || rpoint == j){
+                                counter++;
+                            }
+                            if (counter>=1){
+                                i=dyd-1;
+                            }
+                            if(i==dyd-1 &&counter == 0){
+                                return i;
+                            }
+                        }
+                        catch (IOException e) {
+                    e.printStackTrace();
+                }       
+                    }
+                    
+                    //ieskot kad jo neturetu :D
                 }
             }
+//            for (int i = 0; i < dyd; i++) {
+//                raf.seek(14 * 2 * i + 4 * i + 
+//                        1 * i + 4 * i + 4 * i + 14 * 2 + 4 * 1 + 1);
+//                lpoint = raf.readInt();
+//                rpoint = raf.readInt();
+//                if (lpoint == pos) {
+////                    System.out.println(pos + " pos " + i);
+//                    return findRoot(lpoint);
+//
+//                } else if (rpoint == pos) {
+////                    System.out.println(pos + " pos " + i);
+//                    return findRoot(rpoint);
+//                } else if (i == dyd - 1) {
+//                    return pos;
+//                }
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -412,15 +440,16 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
 
     public void w(Studentas st) {
 
-        System.out.println("root " + findRoot(0));
-        rasyti(st, findRoot(0));
-        System.out.println("w " + dydis);
+        System.out.println(findRoot());
+        
+        rasyti(st, findRoot());
+//        System.out.println("w " + dydis);
         try {
             dydis = (int) (raf.length() / 41);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("wend " + dydis);
+//        System.out.println("wend " + dydis);
     }
 
     public void rasyti(Studentas st, int pos) {
@@ -444,7 +473,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             s.append(charai);
 
             pavarde = s.toString();
-            System.out.println("pavarde read " + pavarde);
+//            System.out.println("pavarde read " + pavarde);
             id = raf.readInt();
             color = raf.readBoolean();
             lpointer = raf.readInt();
@@ -469,7 +498,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
                 }
 
             } else if (st.getId() > id) {
-                System.out.println(st.getId() + " " + id);
+//                System.out.println(st.getId() + " " + id);
                 if (rpointer == -1) {
                     if (pos == 0) {
                         raf.seek(14 * 2 * 1 + 4 * 1 + 1 * 1 + 4 * 1);//yrasome y pirmaja poziciaj
@@ -479,7 +508,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
                                 + 1 * pos + 4 * pos + 4 * pos + 
                                 14 * 2 * 1 + 4 * 1 + 1 * 1 + 4 * 1);
 //                         raf.seek(14*2*pos+4*pos+1*pos+4*pos);
-                        System.out.println(pos + " p ");
+//                        System.out.println(pos + " p ");
                         raf.writeInt(dydis);
                     }
 
@@ -492,6 +521,21 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
                 }
 
             }
+            else if(st.getId() == id){
+                try {
+                raf.seek(14 * 2 * pos + 4 * pos + 1 * pos + 4 * pos + 4 * pos);
+
+                for (int j = 0; j < 14; j++) {
+                    try {
+                        raf.writeChar(st.getPavarde().charAt(j));
+                    } catch (Exception E) {
+                        raf.writeChar(' ');
+                    }
+                }
+            }
+                catch (IOException e) {
+                    
+                }}
         } catch (IOException e) {
             try {
                 raf.seek(14 * 2 * pos + 4 * pos + 1 * pos + 4 * pos + 4 * pos);
@@ -503,7 +547,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
                         raf.writeChar(' ');
                     }
                 }
-                System.out.println("write pavarde " + st.getPavarde());
+//                System.out.println("write pavarde " + st.getPavarde());
                 raf.writeInt(st.getId());
                 raf.writeBoolean(Red);
                 raf.writeInt(-1);
