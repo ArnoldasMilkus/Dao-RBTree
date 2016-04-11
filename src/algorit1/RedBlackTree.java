@@ -405,7 +405,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
                                 i=dyd-1;
                             }
                             if(i==dyd-1 &&counter == 0){
-                                return i;
+                                return j;
                             }
                         }
                         catch (IOException e) {
@@ -449,6 +449,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
 //        System.out.println("wend " + dydis);
     }
 
@@ -559,6 +560,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
         //beliko apkeisti spalvas
 
         if (isRedNode(rpointer) && !isRedNode(lpointer)) {
+            System.out.println("rotate");
             rotateLeftNode(pos);
         }
         try {
@@ -572,6 +574,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             System.out.println("no left left pointer");
         }
         if (isRedNode(lpointer) && isRedNode(rpointer)) {
+            System.out.println("flip color");
             flipColorsNode(pos);
         }
 //        node.N = size(lpointer) + size(rpointer) + 1;
@@ -582,11 +585,13 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
     private boolean isRedNode(int pos) {
         boolean spalva = false;
         try {
-            raf.seek(14 * 2 * pos + 4 * pos);
+            raf.seek(14 * 2 * pos + 4 * pos + 1 * pos +
+                    4 * pos + 4 * pos + 14 * 2 * 1 + 4 * 1);
+//            raf.seek(14 * 2 * pos + 4 * pos);
             spalva = raf.readBoolean();
 //            14*2*1+4*1
         } catch (IOException ex) {
-            System.out.println("neymanoma [patikrinti ar raudonas");
+            System.out.println("neymanoma patikrinti ar raudonas");
         }
         return spalva == Red;
     }
@@ -639,6 +644,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             raf.seek(14 * 2 * pos + 4 * pos + 1 * pos + 
                     4 * pos + 4 * pos + 14 * 2 + 4 * 1);
             boolean color = raf.readBoolean();
+            System.out.println(color + "cpolor");
             int lpointer = raf.readInt();
             int rpointer = raf.readInt();
             raf.seek(14 * 2 * rpointer + 4 * rpointer +
@@ -657,7 +663,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             raf.seek(14 * 2 * rpointer + 4 * rpointer +
                     1 * rpointer + 4 * rpointer + 4 * rpointer + 14 * 2 + 4 * 1);
             raf.writeBoolean(color);
-
+            
             raf.seek(14 * 2 * pos + 4 * pos + 1 * pos + 4 * pos + 
                     4 * pos + 14 * 2 + 4 * 1);
             raf.writeBoolean(Red);
@@ -691,6 +697,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             int rpointer = raf.readInt();
             raf.seek(14 * 2 * pos + 4 * pos + 1 * pos + 4 * pos + 
                     4 * pos + 14 * 2 + 4 * 1);
+            System.out.println("color " + color);
             raf.writeBoolean(!color);
 
             raf.seek(14 * 2 * lpointer + 4 * lpointer + 1 * lpointer + 
@@ -698,6 +705,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             boolean lcolor = raf.readBoolean();
             raf.seek(14 * 2 * lpointer + 4 * lpointer + 1 * lpointer +
                     4 * lpointer + 4 * lpointer + 14 * 2 + 4 * 1);
+            System.out.println("color" + lcolor);
             raf.writeBoolean(!lcolor);
 
             raf.seek(14 * 2 * rpointer + 4 * rpointer + 1 * rpointer + 
@@ -705,6 +713,7 @@ public class RedBlackTree<E extends Comparable<E>> implements SetADT<E> {
             boolean rcolor = raf.readBoolean();
             raf.seek(14 * 2 * rpointer + 4 * rpointer + 1 * rpointer + 
                     4 * rpointer + 4 * rpointer + 14 * 2 + 4 * 1);
+            System.out.println("color" + rcolor);
             raf.writeBoolean(!rcolor);
         } catch (IOException ex) {
             System.out.println("negaliams spalvu sukeitimas");
